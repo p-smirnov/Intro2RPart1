@@ -1,0 +1,836 @@
+---
+title: "Intro To R"
+author: "Petr Smirnov"
+date: '2018-10-14'
+output:
+  ioslides_presentation: default
+  slidy_presentation: default
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What is R?
+
+R is a programming language focused on statistical analysis and visualizing data. 
+
+It is particularly popular among (Bio)Statisticians and Bioinformaticians because:
+
+- It is free
+- It is interpreted
+  - You see the results as you type commands
+- Easy to extend
+- Has a huge community of researchers who happily support each other
+- Many "packages" implementing methods common for analyzing biological data
+
+## Assumptions for this presentation
+
+- Aimed towards people who don't have experience programming in any programming language
+- R often offers many paths to get the same thing done. In 90% of cases, its better to write code you understand then code that is "correct" (i.e. worry about writing clear and correct code, not fast and elegant). 
+  - Solve the other 10% of cases when it becomes an issue
+- Aimed at people who won't be writing R code every day during their grad degree
+  - Can be used as a reference for if you forget part of the basics
+
+## How to get R help
+
+- R has great documentation. `?` and `??` are your friends when you are inside R. 
+```{r doublequestion, echo=TRUE}
+??absolute
+```
+- Google is every programmer's best friend. However, not everything on the internet is always correct!
+
+## Start with the basics.
+
+Our programs want to execute commands on data.  
+
+- Data
+- Control Flow
+- Built in and user defined functions
+
+# Data Types
+## Data Types
+
+
+R has three main basic data types:
+
+Character:
+```{r chars, echo=TRUE, results='hide'}
+"a"
+"Elephant"
+"Hello World"
+```
+
+Numeric:
+```{r nums, echo=TRUE, results='hide'}
+1
+34
+```
+
+Logical:
+```{r logics, results='hide'}
+TRUE
+FALSE
+```
+
+## Other Data Types
+
+Other Data Types you might meet include:
+
+- Integers `1L`
+- Complex numbers `1 + i`
+- Factors
+
+More on factors later.
+
+## Variables
+
+Assigning data to variables allows us to refer to data later on in our code. R has two main assignment operators, `=` and `<-`. 
+
+`->` also exists but is frowned upon, `<-` is prefered. 
+
+```{r}
+a <- 2
+b <- 3
+a + b
+```
+
+We also met our first built in operator, `+`. 
+
+R supports most of the normal math operators as you would expect. `?Arithmetic` will bring up the help page for arithmetic operators. 
+
+## Variable Names
+
+R is quite flexible in allowed variable names. Here are the rules:
+
+- Starts with a letter or `.` not followed by a number
+- Letters, numbers, dot or underline characters can be included
+- Correct: “valid.name”, ”valid name”, ”valid2name3”
+- Incorrect: ”valid name”, ”valid-name”, ”1valid2name3”
+
+**Note: `.` has no special meaning in R**
+
+## Vectors
+
+Fundementally, almost everything in R (except more complex, custom objects defined by users or packages) is a Vector. Everything we met above was a vector of length 1:
+
+```{r}
+length(43)
+length("Hello World")
+length(TRUE)
+```
+
+## Vectors
+We can create vectors of longer lengths. The easiest way is to concatenate vectors of length 1 using the `c` function. 
+
+```{r}
+length(c(1,2,3,4,5))
+length(c("Hello", "World"))
+a <- 1
+b <- c(2,3)
+c(a,b)
+```
+
+## Vectors
+Vectors need to contain data objects of the same type. For example, the following does not give you what you expect:
+```{r}
+c(1, "2")
+```
+
+What R did here is automatically cast to the most flexible data type. In R, all basic data types can be cast into characters. R does this a lot and silently, so be careful!
+
+Most base R operations (ex: `+`) are "vectorized"
+
+```{r}
+c(1,2,3) + c(6,5,4)
+```
+
+
+## Vectors
+Exercise: Create a vector of Logical values, assign it to a variable. Create a vector of Integers and assign to variables. 
+
+Try subtracting the two vectors. What happened?
+
+## Indexing Vectors - Numeric 
+R provides several methods to index into vectors. The simplest is by the numeric position. **Note: R starts counting at 1**
+
+```{r}
+a <- c(2,4,6,8,10)
+a[2]
+a[c(2,4)]
+```
+
+## Indexing Vectors - Numeric 
+We can also assign new data to specific indices of a vector:
+
+```{r}
+a <- c(2,4,6,8,10)
+a[2] <- 5
+a
+a[c(1,3)] <- c(3,7)
+a
+```
+
+
+## Indexing Vectors - Numeric 
+R provides a shortcut for creating a vector of consecutive integers, using `:`
+```{r}
+a <- c(2,4,6,8,10)
+a[2:4]
+```
+
+R also provides a shortcut to get all but the specified elements, using negative numbers.
+```{r}
+a <- c(2,4,6,8,10)
+a[-(2:4)]
+```
+
+## Indexing Vectors - Logical
+
+R also allows using logical indexing into vectors. Easiest to explain with example:
+
+```{r}
+a <- c(2,4,6,8,10)
+a[c(TRUE, TRUE, FALSE, TRUE, FALSE)]
+```
+
+**BEWARE: When doing things that require vectors of the same length, R will recycle the shorter one, silently if length is a multiple of longer one and with warnings if it's not.**
+
+```{r}
+a <- c(2,4,6,8,10)
+a[c(TRUE, FALSE)]
+```
+
+## Named Vectors 
+
+R allows us to give names to each object in a vector, and use them to index:
+```{r}
+a <- c(2,4,6,8,10)
+names(a) <- c("A", "B", "C", "D", "E")
+a[c("A", "D")]
+```
+
+## Lists
+
+Lists are what we use when we want to store different data types together. Think of them as a vector of boxes, you can put anything in the box.
+
+```{r}
+b <- list(1, "a", c(TRUE, FALSE))
+b
+```
+
+## Indexing Lists
+
+Indexing lists is a bit more complex than vectors. Think of a list as the vector of boxes. `b[2]` does what it does to vectors, it gives you back the second box, but it doesn't unpack it:
+
+```{r}
+b <- list(1, "a", c(TRUE, FALSE))
+b[1]
+```
+The output above gives us a clue on how to unpack - `[[`.
+
+## Indexing Lists - `[[`
+
+Using `[[`, we can get a specific box and unpack it at the same time. 
+
+```{r}
+b <- list(1, "a", c(TRUE, FALSE))
+b[[2]]
+```
+
+However, we can only unpack one box at a time, `b[[1:2]]` won't work. 
+
+
+## Indexing Lists - `$`
+
+Named lists get an extra way to unpack the boxes: 
+
+```{r}
+b <- list("Name1" = 1, "Name2" = "a", 
+          "Name3" = c(TRUE, FALSE))
+b$Name3
+```
+
+
+## Lists
+
+Create the list b from the previous slide:
+
+```{r}
+b <- list("Name1" = 1, "Name2" = "a", 
+          "Name3" = c(TRUE, FALSE))
+```
+
+What happens when you try: `b[-2]`? `b[[-2]]`? 
+
+Can you think of any other way to access the "Name3" element of the list, without using the `&`?
+
+## Matrices
+
+Matrices are vectors with 2 dimensions. Similar rules apply.
+```{r}
+a <- matrix(data=0, nrow=3, ncol=4)
+a
+a[1:2, 1:2]
+```
+
+## Matrices
+
+Matrices are filled with data column by column:
+
+```{r}
+a <- matrix(data=1:10, nrow=2, ncol=5)
+a
+a[, c(2,5)]
+```
+
+
+## Matrices - Names
+
+Matrices can have row and/or column names:
+
+```{r}
+a <- matrix(data=1:10, nrow=2, ncol=5)
+rownames(a) <- c("A", "B")
+a["B", c(2,5)]
+```
+
+
+## Data Frames
+
+Matrices, like vectors, must contain the same data type. When we want a square object with columns of different data types, we use R's `data.frame`.
+
+```{r}
+a <- data.frame(col1 = c(1,2,3), col2 = c("a","b","c"))
+a
+```
+`col1` and `col2` above are arbitrary, define the column names. R likes to give `data.frames` row and column names, and will create ugly ones by default (try running `data.frame(c(1,2,3), c("a","b","c"))` in your R session).
+
+
+## Indexing Data Frames
+
+Data Frames in R can act like a square "matrix"-like object, or as a list of vectors:
+
+```{r}
+a <- data.frame(col1 = c(1,2,3), col2 = c("a","b","c"), 
+                col3 = c(TRUE,TRUE,FALSE))
+a[2:3,c("col1", "col3")]
+a[["col2"]]
+```
+**We just met a factor. Come back to those later!**
+
+## Data Frames
+
+Create the data frame `a` from the previous slide. 
+
+```{r}
+a <- data.frame(col1 = c(1,2,3), col2 = c("a","b","c"), 
+                col3 = c(TRUE,TRUE,FALSE))
+```
+
+How would you get rid of the second column? How about the middle row? 
+
+## Hello World
+
+Traditionally, the first program one writes in any language is one to print out "Hello world!". In R, this program is painfully boring. The following does it:
+```{r}
+"Hello world!"
+```
+
+# Control Flow
+
+## Control Flow
+
+Control Flow statements tell our program how to make different decisions based on the data it has. There are two basic types, loops and branches. 
+
+Loops include `for` and `while` loops, and Branches are done primarily using `if` and `else` statements. 
+
+
+## If Statements
+
+If statements allow you to do something only if what is inside the (round) brackets is TRUE. Example:
+
+```{r}
+a <- 1
+b <- 10
+if(a > 5){
+  print("a is greater than 5")
+}
+if(b > 5){
+  print("b is greater than 5")
+}
+```
+
+Meet our comparison operators: `>`, `<`, `<=`, `>=`, `==`, `!=`. Plus `identical` to be very strict. 
+
+## Else Statements
+
+Else allows us to do something in case the `if` evaluates to `FALSE`:
+
+```{r}
+a <- 1
+if(a > 5){
+  print("a is greater than 5")
+} else {
+  print("a is less than or equal to 5")
+}
+```
+
+
+## Else If Statements
+
+Commonly seen and convenient is the else-if constuction:
+
+```{r}
+a <- 5
+if(a > 5){
+  print("a is greater than 5")
+} else if (a == 5){
+  print("a equals 5")
+} else {
+  print("a is less than 5")
+}
+```
+
+## For Loops
+
+For loops do something for every value in a vector. Syntax:
+
+```{r}
+myVec <- c("A", "B", "C")
+for(letter in myVec){
+  print(letter)
+}
+```
+
+
+## For Loops
+
+It is very common to use for loops to count the indicies of a vector:
+
+```{r}
+myVec <- c(2, 5, 21)
+for(i in seq_along(myVec)){
+  print(myVec[i] + 3)
+}
+```
+Note: I used a new built-in function, seq_along. You might be tempted to do `1:length(myVec)`. This breaks when `length(myVec)` is accidentally 0 (try `1:0` in your R session), `seq_along` does not. 
+
+## While Loops
+
+While loops will do something while whatever is in the round brackets is TRUE:
+
+```{r}
+myVec <- c("a","b","c")
+i <- 1
+while(i <= length(myVec)){
+  print(myVec[i])
+  i <- i + 1
+}
+```
+
+## Logical Operators
+
+When dealing with control flow, we work with TRUE and FALSE values. To make decisions based on multiple pieces of data, we need to combine comparison statements with logical operators. These include `&&` for AND, `||` for OR, and `!` for NOT. 
+
+
+```{r}
+a <- 1
+b <- 10
+if(a > 5 && b > 5){
+  print("Both a and b are greater than 5")
+}
+if(a > 5 || b > 5){
+  print("At least one of a or b is greater than 5")
+}
+```
+
+
+## FizzBuzz
+
+We now have almost all the pieces to write an R program that succeeds at FizzBuzz. The goal of FizzBuzz is to say (or in case of programs print) all the numbers between 1 and 100, but replace anything divisible by 3 with "Fizz", anything divisible by 5 with "Buzz", and anything divisible by 3 and 5 with "FizzBuzz".
+
+The last piece you need is something to test for divisibility. The modulus operator `%%` gives the remainder after division. So, for example: `6 %% 3` is 0, `8 %% 3` is 2. 
+
+Try to write a program that can FizzBuzz up to 100, by using a `for` loop to go through numbers `1:100` and `if-else` statements to choose what to print. 
+
+
+## More FizzBuzz?
+
+We will come back to FizzBuzz two more times, and solve it two more different ways. R usually gives us several options to get the same thing done. Most of the time, you should do whatever you are comfortable with. 
+
+
+# Functions
+
+## R likes to copy things
+
+Before we talk about functions, we need to mention a technical detail about R. R does everything by copying. For those who have worked in other languages, this may or may not be unusual. What do I mean?
+
+```{r, results='hide'}
+a <- 5
+b <- a
+
+b <- 3
+
+b
+a
+```
+
+## R likes to copy things
+
+Before we talk about functions, we need to mention a technical detail about R. R does everything by copying. For those who have worked in other languages, this may or may not be unusual. What do I mean?
+
+```{r}
+a <- 5
+b <- a
+
+b <- 3
+
+b
+a
+```
+
+
+## Functions
+
+Functions give us a way to name a piece of code to be used later.
+
+```{r}
+toCelsius <- function(F){
+  C <- (F-32) * 5 / 9
+  return(C)
+}
+
+toCelsius(F = 400)
+```
+
+
+## Scope
+
+Variables defined inside a function exist only while that function is running. Once its done and returned a value, they are gone. 
+
+```{r, error=TRUE}
+
+myFunc <- function(x, y){
+  div <- x/y
+  mul <- x*y
+  return(mul)
+}
+z <- myFunc(64, 4)
+div
+```
+
+## Scope
+
+Changing variables inside a function also does not affect their value outside the function. 
+
+```{r, error=TRUE}
+x <- 64
+y <- 4
+myFunc <- function(x, y){
+  x <- x/y
+  return(x)
+}
+print(myFunc(x, y))
+x
+```
+
+## *apply
+
+Functions in R become super useful together with the built-in apply functions. *apply helps you apply a function to each element of a vector or row/column of a matrix. 
+
+
+There are 3 main apply functions: `lapply`, `sapply` and `apply`. `lapply` - l stands for list, will return a list. `sapply` s stands for simple, will try to simplify the list. `apply` is `sapply` for matrices and data.frames. 
+
+## sapply
+
+Here is an sapply example:
+
+```{r}
+toCelsius <- function(F){
+  C <- (F-32) * 5 / 9
+  return(C)
+}
+
+my.temps <- c(300, 350, 375, 400)
+
+my.temps.celsius <- sapply(my.temps, toCelsius)
+my.temps.celsius
+```
+
+## FizzBuzz Again
+
+Lets try to rewrite FizzBuzz using sapply. Recall the solution from last time:
+```{r, results='hide'}
+for(i in 1:100){
+  if(i %% 3 == 0 && i %% 5 == 0) {
+    print("FizzBuzz")
+  } else if(i %% 3 == 0){
+    print("Fizz")
+  } else if(i %% 5 == 0){
+    print("Buzz")
+  } else {
+    print(i)
+  }
+}
+```
+
+Try writing a function that decides whether to Fizz/Buzz/FizzBuzz for each number, and then applying over the numbers 1:100. 
+
+
+## Apply
+
+`apply`, unlike sapply and lapply takes 3 arguments: the data to apply over, which dimensions to apply over, and the function to apply. 
+
+Heres a silly example, using the built-in `sum` function, which returns the sum of a vector:
+```{r, results="hold"}
+my.mat <- matrix(1:4, nrow=2, ncol=2)
+apply(my.mat, 1, sum)
+apply(my.mat, 2, sum)
+apply(my.mat, c(1,2), sum)
+```
+
+
+## More Useful Example With Apply 
+
+Lets work through a more useful example of apply using the dataset from Jason Lerch's teaching of the Biostats course this year. Along the way we will learn to read real data into R and better work with data frames.  
+
+
+## More Useful Example With Apply
+
+If our setup at the beginning worked, and R is in the right folder, we should be able to read the file in easily. Lets read it into R using R's very useful `read.csv` function, which will read the data into a data.frame:
+
+```{r}
+volumes <- read.csv(file="./volumes.csv")
+```
+
+If this above didn't work, let us know!
+
+Lets look at the dimensions of this data frame.
+```{r}
+dim(volumes)
+```
+
+## More Useful Example With Apply
+
+If you run `View(volumes)` in RStudio, it will open the data frame up in a spreadsheet-like Viewer. Lets do that now, and examine the last two columns. 
+
+The last two columns don't contain volume measurements, rather they contain the ID and Timepoint for these samples. Lets assume I want to z-score all my measurements for each section of the brain (I can't z-score characters).
+
+## More Useful Example With Apply
+
+R provides a useful built-in function `scale` to z-score a vector. Using this function together with `apply`, try to z-score each column of the volumes matrix. The first step would be to remove the columns that are not measurements.
+
+```{r}
+volume.measurements <- volumes[,-c(160,161)]
+volume.measurements[1:3,1:3]
+```
+
+Now try to "apply" the scale function over this matrix.  
+
+## Anonymous functions
+
+Often, you'll want to use a function on a vector/matrix only once inside an *apply statement. Bioinformaticians are generally lazy, so we don't want to come up with a name for each function we use. R allows you to define anonymous functions - you will see this a lot if you read R code written by someone else.
+
+```{r}
+my.temps <- c(150, 180, 190, 205)
+
+print(sapply(my.temps, function(temp){
+  return(temp*9/5 + 32)
+}))
+```
+
+# Vectorized Operations
+
+## Thinking Vectorized
+
+So far, we have been operating on each element of a vector one by one, in a manual way. However, the built-in functions in R have great support for vectors, and many functions will do this automatically for you. We have already seen examples with arithmetic operations:
+
+```{r}
+a <- c(3,2,1)
+b <- c(4,5,6)
+
+a + b
+b - a
+b^a
+```
+
+## Thinking Vectorized
+
+Other operations in R will take a whole vector as input and give you an output. Examples:
+
+```{r, results="hold"}
+a <- c(1,2,3,4)
+sum(a)
+min(a)
+mean(a)
+summary(0:100)
+```
+
+## Applying to columns
+
+We already saw the use of `apply` on a matrix. Lets try the built-in functions out on our z-scored volumes matrix we generated before, making sure the z-score worked properly. 
+
+Use the `mean` and `sd` functions to calculate the average and standard deviation of each column of the `z.scored.volumes` matrix, and take a `summary` of them. 
+
+What do we see?
+
+
+## Matrix Operations
+
+R also has a few functions that are "vectorized" to work on matrices. `colSums`, `rowSums`, `colMeans` and `rowMeans` are the most common ones. 
+
+```{r}
+z.vol.means <- colMeans(z.scored.volumes)
+length(z.vol.means)
+summary(z.vol.means)
+```
+
+
+## Logical Vector Operations
+
+R provides vectorized versions of `&&` and `||`: `&` and `|`. The vectorized versions take two vectors and apply element by element. The two symbol versions will only look at the first element of the two vectors - useful in `if` statements since if can take only one TRUE or FALSE value. Note: `!` is also vectorized. 
+
+```{r}
+a <- c(TRUE, FALSE, TRUE)
+b <- c(TRUE, TRUE, FALSE)
+
+a | b
+a & b
+```
+
+
+## Logical Operations and Indexing
+
+`&` and `|` are very useful for logical indexing. Lets solve "fizzbuzz" yet another way using these functions:
+
+```{r, results='hide'}
+my.nums <- 1:100
+fizz.index <- my.nums %% 3 == 0
+buzz.index <- my.nums %% 5 == 0
+fizz.buzz.index <- fizz.index & buzz.index
+my.nums <- as.character(my.nums) # not necessary, but nice to be explicit
+my.nums[fizz.index] <- "fizz"
+my.nums[buzz.index] <- "buzz"
+my.nums[fizz.buzz.index] <- "fizzbuzz"
+print(my.nums)
+```
+
+
+## FizzBuzz challenge:
+
+Now that we saw how to use logical operators and indexing together, try to solve the following question:
+
+In FizzBuzz, what is the sum of all the numbers that are neither fizzed, buzzed or fizzbuzzed. 
+
+Bonus question: What is the sum of all the numbers that are neither fizzed nor buzzed, but including the fizzbuzzers. 
+
+## Finally: Factors
+
+Sooner or later in R you will meet factors. Factors are a weird offspring of characters and integers. They are very useful for the statistical functions in R, but can be annoying and introduce errors into your code if you aren't expecting them. Some examples of factors we met so far:
+
+```{r, results="hold"}
+a <- data.frame(col1 = c(1,2,3), col2 = c("a","b","c"), 
+                col3 = c(TRUE,TRUE,FALSE))
+a$col2
+class(a$col2)
+head(volumes[["Timepoint"]])
+```
+
+
+## Factors
+
+Factors are made up of two parts: a vector of integers, and a vector of corresponding levels/labels. Lets take a closer look at timepoints:
+
+```{r, results="hold"}
+levels(volumes[["Timepoint"]])
+head(as.numeric(volumes[["Timepoint"]]))
+head(volumes[["Timepoint"]])
+```
+
+## How to work with factors
+
+Most of the time, you can read factors as if they are character vectors. For example:
+```{r}
+volumes[["Timepoint"]][1] == "Pre1"
+```
+
+Assigning to factors is not easy though, they don't like it if you add something thats not in the levels vector!
+```{r, error=TRUE}
+volumes[["Timepoint"]][1] <- "Elephant"
+volumes[["Timepoint"]][1] <- "Pre1" # Put the correct value back. 
+```
+
+## Turning R's Love of Factors Off
+
+As you may have noticed, R likes to create factors whenever it puts a character vector into data.frames. R assumes you will want to do statistics on your data frame. 
+
+Many people turn this default behaviour off, and create factors manually (by calling the `factor` function on a character vector). 
+
+You can do this by putting:
+
+`options(stringsAsFactors = TRUE)` 
+
+at the top of your R files.
+
+# Built-in functions and Packages
+
+## Doing things in R
+
+Thats pretty much the end of the "basics" of the language. The rest is finding the right built-in functions or the right package to get what you want done (or writing a function yourself). 
+
+Lets take a look at some useful examples - saving and plotting. 
+
+## Saving files in R
+
+Suppose we want to save our z-scored volumes to a file. We can save it in an R format, or back to a csv if we want to open it in excel later. Lets practice using the R help.
+
+Look up `?save` and `write.csv`. Use those functions to write the matrix to an `.RData` file and a `.csv` file. 
+
+## Plotting in R
+
+R provides many built in plots, and they have the bonus of looking pretty good!
+
+Lets start with a few basics. Lets draw a simple scatter plot to look at the relationship between the first two columns of `z.scored.volumes`
+
+```{r}
+plot(z.scored.volumes[,1], z.scored.volumes[,2])
+```
+
+## Plotting - your turn:
+
+The `hist` function in R will plot a histogram for a vector of values. Try using the `hist` function to plot a histogram for the 1st, 4th, 8th, and 13th column of z.scored.volumes. 
+
+Hint: Use a for loop instead of writing the code four times!
+
+
+## Saving plots
+
+To save plots in R, we first need to "open" a device (file) to write to and close it after. For example, to open a pdf file to save our plot to:
+
+```{r}
+pdf("myPlot.pdf")
+hist(z.scored.volumes[,17])
+dev.off()
+```
+
+R can save to pdf, png, tiff and svg among others. 
+
+## One Last Task:
+
+Lets go back to the original volumes. Suppose I want to compare using a boxplot the volumes of the "amygdala" between Timepoint Pre1 and 2 week. Try to code that up, and save it to a pdf file on your hard disk. 
+
+
+## One Last Task: 
+
+Here is an example on how to use easiest way to use the boxplot function:
+```{r}
+boxplot(c(1,2,3), c(4,5,6))
+```
+
+## Questions, Comments, Come Back Next Week!
+
+Any questions, comments, things you want covered by Danton in Part 2 next week?
+
+
