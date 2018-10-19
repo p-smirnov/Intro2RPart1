@@ -264,7 +264,7 @@ b <- list("Name1" = 1, "Name2" = "a",
 
 What happens when you try: `b[-2]`? `b[[-2]]`? 
 
-Can you think of any other way to access the "Name3" element of the list, without using the `&`?
+Can you think of any other way to access the "Name3" element of the list, without using the `$`?
 
 ## Matrices
 
